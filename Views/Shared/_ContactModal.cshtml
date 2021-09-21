@@ -1,0 +1,52 @@
+﻿@model Web4Spain.Models.ContactViewModel
+
+<div class="modal fade" tabindex="-1" id="contactModal"
+     data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+
+                <div class="modal-header">
+                    <h4 class="modal-title"> Contact Us</h4>
+                </div>
+
+                <form action="~/Home/Index" method="post">
+                    <div class="form-group" class"form-">
+                        <label asp-for="Name">Your name: </label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-warning"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Email">Your email: </label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-warning"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Message">Message: </label>
+                        <textarea rows="4" asp-for="Message" class="form-control"></textarea>
+                        <span asp-validation-for="Message" class="text-warning"></span>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-envelope"></i> Send message</button>
+                        <button type="button" id="btnHideModal" class="btn btn-secondary">
+                            <i class="fas fa-window-close"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+
+</script>
+
+
+
+
+
+<script src="bootstrap/js/bootstrap.min.js"></script>
