@@ -5,6 +5,10 @@
     {
       "library": "@fortawesome/fontawesome-free@5.15.4",
       "destination": "wwwroot/lib/fortawesome/fontawesome-free/"
+    },
+    {
+      "library": "jquery-ui@1.12.1",
+      "destination": "wwwroot/lib/jquery-ui/"
     }
   ]
 }

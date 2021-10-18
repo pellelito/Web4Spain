@@ -1,0 +1,89 @@
+﻿@model Web4Spain.Models.BookingModel
+@{
+    ViewData["Title"] = "Booking";
+}
+
+<link href="~/css/calendar.css" rel="stylesheet" />
+<h1>Booking</h1>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form method="post">
+                <div class="form-group">
+                    <label asp-for="ReservationStart">When will you arrive</label>
+                    <input class="form-control" asp-for="ReservationStart" />
+                    <span asp-validation-for="ReservationStart" class="text-warning"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ReservationEnd">When will you leave</label>
+                    <input class="form-control" asp-for="ReservationEnd" />
+                    <span asp-validation-for="ReservationEnd" class="text-warning"></span>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-envelope"></i> Send request</button>
+            </form>
+        </div>
+        <div class="col">
+            Calendar
+            <div class="responsive-iframe-container big-container">
+                <iframe src="https://calendar.google.com/calendar/embed?src=v0sp8kc55n687i5d7rv0f0uqko%40group.calendar.google.com&ctz=Europe%2FStockholm" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.HousingId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReservationStart)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReservationEnd)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (BookingModel item in (BookingModel[])ViewBag.Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HousingId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserId)
+                </td>
+                <td>
+                    @Convert.ToString(string.Format("{0:dd/MM/yyyy}", item.ReservationStart))
+
+                </td>
+                <td>
+                    @Convert.ToString(string.Format("{0:dd/MM/yyyy}", item.ReservationEnd))
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.BookingId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.BookingId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="~/js/site.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+

@@ -1,0 +1,45 @@
+﻿@model Web4Spain.Models.BookingModel
+
+<h4>BookingModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BookingId" />
+            <div class="form-group">
+                <label asp-for="HousingId" class="control-label"></label>
+                <input asp-for="HousingId" readonly class="form-control" />
+                <span asp-validation-for="HousingId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" readonly class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label"></label>
+                <input asp-for="UserId" readonly class="form-control" />
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReservationStart" class="control-label"></label>
+                <input type="datetime" asp-for="ReservationStart" asp-format="{0:yyyy-MM-dd}" class="form-control" />
+                <span asp-validation-for="ReservationStart" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReservationEnd" class="control-label"></label>
+                <input type="datetime" asp-for="ReservationEnd" asp-format="{0:yyyy-MM-dd}" class="form-control" />
+                <span asp-validation-for="ReservationEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Booking">Back to List</a>
+</div>
+

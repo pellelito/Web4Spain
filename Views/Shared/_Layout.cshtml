@@ -6,7 +6,9 @@
     <title>@ViewData["Title"] - Web4Spain</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/lib/fortawesome/fontawesome-free/css/all.css" rel="stylesheet" />
+
     <link rel="stylesheet" href="~/css/site.css" />
+
 </head>
 <body>
     <header>
@@ -20,16 +22,15 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Denia">About Denia</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About us</a>
                         </li>
 
                     </ul>
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>
@@ -45,14 +46,16 @@
         <div class="container">
             &copy; 2021 - Web4Spain - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy </a>
             <a name="btnLink" id="btnLink">Contact Us</a>
-            <partial name="_ContactModal" />
+            @*<partial name="_ContactModal" />*@
             <script src="bootstrap/js/bootstrap.min.js"></script>
         </div>
     </footer>
-    <script src="~/js/"></script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/calendar.js"></script>
+
     @await Component.InvokeAsync("Notyf")
     @await RenderSectionAsync("Scripts", required: false)
 </body>

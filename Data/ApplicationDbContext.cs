@@ -1,16 +1,23 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Web4Spain.Models;
 
 namespace Web4Spain.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUserModel>
     {
+       
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
+        public DbSet<ApplicationUserModel> ApplicationUserModels { get; set; }
+        public DbSet<BookingModel> Bookings { get; set; }
+
+
+
     }
+
+
 }
