@@ -41,17 +41,20 @@ namespace Web4Spain.Controllers
         [HttpPost]
         public ActionResult Booking(BookingModel booking)
         {
-
+            booking.ReservationStart = booking.ReservationStart.AddHours(16);
+            booking.ReservationEnd = booking.ReservationEnd.AddHours(11);
+            Console.WriteLine("Booking: " + booking.ReservationStart);
             if (ModelState.IsValid && CheckAvailability(booking))
             {
                 booking.BookingId = Guid.NewGuid();
                 booking.HousingId = 1;
                 booking.Status = 1;
                 booking.UserId = User.Identity.Name;
-                _notyf.Success($"You successfully requested a booking for " +
-               $"{(booking.ReservationEnd - booking.ReservationStart).TotalDays} days, arriving " +
-               $"{booking.ReservationStart.ToShortDateString()} and leaving " +
-               $"{booking.ReservationEnd.ToShortDateString()}");
+
+                /* _notyf.Success($"You successfully requested a booking for " +
+                $"{(booking.ReservationEnd - booking.ReservationStart).TotalDays} days, arriving " +
+                $"{booking.ReservationStart.ToShortDateString()} and leaving " +
+                $"{booking.ReservationEnd.ToShortDateString()}"); */
 
                 _context.Bookings.Add(booking);
                 _context.SaveChanges();
@@ -206,7 +209,10 @@ namespace Web4Spain.Controllers
         }
         public bool CheckAvailability(BookingModel booking)
         {
-            if (((booking.ReservationEnd - booking.ReservationStart).TotalDays % 7 != 0) || (booking.ReservationStart.DayOfWeek != DayOfWeek.Saturday))
+            int check = ((int)(booking.ReservationEnd - booking.ReservationStart).TotalDays) + 1;
+            Console.WriteLine(check % 7);
+
+            if ((check % 7 != 0) || (booking.ReservationStart.DayOfWeek != DayOfWeek.Saturday))
             {
                 _notyf.Error("Please only select whole weeks, from Saturday to Saturday");
                 return false;
@@ -214,7 +220,7 @@ namespace Web4Spain.Controllers
             }
 
             var bookings = _context.Bookings.ToArray();
-            if (bookings.Length > 1)
+            if (bookings.Length > 0)
             {
                 foreach (var x in bookings)
                 {

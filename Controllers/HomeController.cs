@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Diagnostics;
 using System.Linq;
 using Web4Spain.Data;
@@ -63,21 +62,21 @@ namespace Web4Spain.Controllers
         public IActionResult Booking()
         {
             var bookings = _context.Bookings.Where(x => x.UserId == User.Identity.Name).ToArray();
-            if (bookings.Length < 1)
-            {
-                _notyf.Error("You have no bookings to show");
+            /* if (bookings.Length < 1)
+             {
+                 //Do nothing at the moment
 
-            }
-            else
-            {
-                foreach (var x in bookings)
-                {
-                    Console.WriteLine(bookings.Length);
-                    Console.WriteLine(x.UserId + " has booked " + ((x.ReservationEnd - x.ReservationStart).TotalDays).ToString() + " days");
-                }
-                ViewBag.Model = bookings;
-            }
+             }
+             else
+             {
+                 foreach (var x in bookings)
+                 {
+                     Console.WriteLine(bookings.Length);
+                     Console.WriteLine(x.UserId + " has booked " + ((x.ReservationEnd - x.ReservationStart).TotalDays).ToString() + " days");
+                 }
 
+             } */
+            ViewBag.Model = bookings;
             return RedirectToAction("Booking", "Booking", null);
         }
 
