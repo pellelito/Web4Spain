@@ -30,11 +30,12 @@ namespace Web4Spain.Controllers
             return View();
         }
         [HttpPost, ActionName("Index")]
-        public ActionResult Index(ContactViewModel contact)
+        public ActionResult Index(string name, string email, string message)
         {
             if (ModelState.IsValid)
             {
-                _notyf.Success("Tack, " + contact.Name);
+                // send contact form
+                _notyf.Success("Tack, " + name);
                 ModelState.Clear();
 
             }
@@ -62,20 +63,6 @@ namespace Web4Spain.Controllers
         public IActionResult Booking()
         {
             var bookings = _context.Bookings.Where(x => x.UserId == User.Identity.Name).ToArray();
-            /* if (bookings.Length < 1)
-             {
-                 //Do nothing at the moment
-
-             }
-             else
-             {
-                 foreach (var x in bookings)
-                 {
-                     Console.WriteLine(bookings.Length);
-                     Console.WriteLine(x.UserId + " has booked " + ((x.ReservationEnd - x.ReservationStart).TotalDays).ToString() + " days");
-                 }
-
-             } */
             ViewBag.Model = bookings;
             return RedirectToAction("Booking", "Booking", null);
         }

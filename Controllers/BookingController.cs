@@ -23,8 +23,6 @@ namespace Web4Spain.Controllers
         private readonly INotyfService _notyf;
         private readonly ApplicationDbContext _context;
 
-
-
         public BookingController(ILogger<BookingController> logger, INotyfService notyf, ApplicationDbContext context)
         {
             _notyf = notyf;
