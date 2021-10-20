@@ -5,6 +5,7 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
@@ -43,7 +44,7 @@ namespace Web4Spain.Controllers
         {
             booking.ReservationStart = booking.ReservationStart.AddHours(16);
             booking.ReservationEnd = booking.ReservationEnd.AddHours(11);
-            Console.WriteLine("Booking: " + booking.ReservationStart);
+            // Console.WriteLine("Booking: " + booking.ReservationStart);
             if (ModelState.IsValid && CheckAvailability(booking))
             {
                 booking.BookingId = Guid.NewGuid();
@@ -51,15 +52,12 @@ namespace Web4Spain.Controllers
                 booking.Status = 1;
                 booking.UserId = User.Identity.Name;
 
-                /* _notyf.Success($"You successfully requested a booking for " +
-                $"{(booking.ReservationEnd - booking.ReservationStart).TotalDays} days, arriving " +
-                $"{booking.ReservationStart.ToShortDateString()} and leaving " +
-                $"{booking.ReservationEnd.ToShortDateString()}"); */
 
+                //add booking to db
                 _context.Bookings.Add(booking);
                 _context.SaveChanges();
                 ModelState.Clear();
-                AddToCalender(booking);
+                AddToCalender(1, booking);
 
             }
             else
@@ -72,14 +70,16 @@ namespace Web4Spain.Controllers
             return RedirectToAction(nameof(Booking));
         }
 
-        private static void AddToCalender(BookingModel booking)
+        private static void AddToCalender(int action, BookingModel booking)
 
         {
             String calendarId = @"v0sp8kc55n687i5d7rv0f0uqko@group.calendar.google.com";
             string jsonFile = "web4spain-22b04057a032.json";
             string[] Scopes = { CalendarService.Scope.Calendar };
+            var eventId = (booking.BookingId.ToString().Replace("-", ""));
+            
 
-
+            //connect to goggle calendar
             ServiceAccountCredential credential;
 
             using (var stream =
@@ -99,6 +99,7 @@ namespace Web4Spain.Controllers
                 ApplicationName = "Web4Spain",
             });
 
+            
             Event calendarEvent = new()
             {
                 Start = new EventDateTime
@@ -111,13 +112,29 @@ namespace Web4Spain.Controllers
                     DateTime = booking.ReservationEnd,
                     TimeZone = "Europe/Stockholm"
                 },
-                Id = booking.BookingId.ToString().Replace("-", ""),
+                Id = eventId,
                 Summary = "Booked"
 
             };
 
-            Event addEvent = service.Events.Insert(calendarEvent, calendarId).Execute();
-            Console.WriteLine("Event created: " + addEvent.ICalUID);
+            switch (action)
+            {
+                case 1:
+                    //insert new event i google calender       
+                    service.Events.Insert(calendarEvent, calendarId).Execute();
+                    break;
+
+                case 2:
+                    //delete from google calendar
+                    service.Events.Delete(calendarId, eventId).Execute();
+                    break;
+
+                case 3:
+                    //edit calender
+                    service.Events.Update(calendarEvent, calendarId, eventId).Execute();
+                    break;
+
+            }
         }
 
         // GET: BookingController/Details/5
@@ -141,18 +158,23 @@ namespace Web4Spain.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Guid id, BookingModel booking)
         {
-            try
+            booking.ReservationStart = booking.ReservationStart.AddHours(16);
+            booking.ReservationEnd = booking.ReservationEnd.AddHours(11);
+
+            if (CheckAvailability(booking))
             {
-                var bookings = _context.Bookings.ToArray();
-                _notyf.Success("Uppdated booking starting: <br>" + booking.ReservationStart.ToShortDateString() + "<br> and ending: <br>" + booking.ReservationEnd.ToShortDateString());
                 _context.Update(booking);
                 _context.SaveChanges();
+                AddToCalender(3, booking);
+                return RedirectToAction(nameof(Booking));
+
             }
-            catch
+            else
             {
-                _notyf.Error("Unable to proceed with booking");
+                return View();
             }
-            return RedirectToAction(nameof(Booking));
+
+
         }
 
         // GET: BookingController/Delete/5
@@ -170,36 +192,9 @@ namespace Web4Spain.Controllers
         {
             try
             {
-
-
-                String calendarId = @"v0sp8kc55n687i5d7rv0f0uqko@group.calendar.google.com";
-                string jsonFile = "web4spain-22b04057a032.json";
-                string[] Scopes = { CalendarService.Scope.Calendar };
-
-
-                ServiceAccountCredential credential;
-
-                using (var stream =
-                    new FileStream(jsonFile, FileMode.Open, FileAccess.Read))
-                {
-                    var confg = Google.Apis.Json.NewtonsoftJsonSerializer.Instance.Deserialize<JsonCredentialParameters>(stream);
-                    credential = new ServiceAccountCredential(
-                       new ServiceAccountCredential.Initializer(confg.ClientEmail)
-                       {
-                           Scopes = Scopes
-                       }.FromPrivateKey(confg.PrivateKey));
-                }
-
-                var service = new CalendarService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = "Web4Spain",
-                });
-
-                service.Events.Delete(calendarId, (booking.BookingId.ToString().Replace("-", ""))).Execute();
+                AddToCalender(2, booking);
                 _context.Remove(booking);
                 _context.SaveChanges();
-
                 return RedirectToAction(nameof(Booking));
             }
             catch
@@ -219,20 +214,24 @@ namespace Web4Spain.Controllers
 
             }
 
-            var bookings = _context.Bookings.ToArray();
+            var bookings = _context.Bookings.AsNoTracking().ToArray();
             if (bookings.Length > 0)
             {
                 foreach (var x in bookings)
                 {
-                    if (((x.ReservationStart <= booking.ReservationStart) && (booking.ReservationStart <= x.ReservationEnd)) || (x.ReservationStart <= booking.ReservationEnd) && (booking.ReservationEnd <= x.ReservationEnd))
-
+                    if (!x.BookingId.Equals(booking.BookingId))
                     {
-                        _notyf.Error("Not avalible on selected dates");
-                        return false;
+                        if (((x.ReservationStart <= booking.ReservationStart) && (booking.ReservationStart <= x.ReservationEnd)) || (x.ReservationStart <= booking.ReservationEnd) && (booking.ReservationEnd <= x.ReservationEnd))
+
+                        {
+                            _notyf.Error("Not avalible on selected dates");
+                            return false;
+                        }
                     }
 
                 }
             }
+
             return true;
         }
     }
